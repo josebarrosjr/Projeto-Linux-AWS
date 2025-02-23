@@ -16,7 +16,7 @@ O objetivo do projeto consiste em desenvolver e testar habilidades em Linux, AWS
 
 ### Tecnologias Utilizadas
 
-- **Infraestrutura:**	AWS EC2, VPC, Security Groups, Subnets, Elastic IP
+- **Infraestrutura:**	AWS EC2, VPC, Security Groups, Subnets
 - **Servidor Web:** 	   Nginx, Systemd
 - **Automação:**    	   Bash Scripting, Cron
 - **Monitoramento:** 	cURL, Discord Webhooks, Logs
