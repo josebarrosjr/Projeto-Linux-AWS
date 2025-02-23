@@ -303,9 +303,12 @@ Acrescente a linha:
 ```
 
 📌
-- *** * * * ***: Define a execução do script a cada minuto.
-    - Os campos * representam: minuto, hora, dia do mês, mês, dia da semana.
-    - * significa "qualquer valor".
+
+" * * * * * " Define a execução do script a cada minuto.
+   - Os campos ocupados por " * " representam: minuto, hora, dia do mês, mês, dia da semana.
+   - " * " significa "qualquer valor".
+
+Para salvar e sair pressione ESC e digite **:wq** (whrite and quit/salvar alterações e sair).
 
 **Automação e notificação via Discord configurados!** ✅
 
