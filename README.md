@@ -32,7 +32,7 @@ A **VPC** é um ambiente de rede isolado e seguro na AWS, onde você pode execut
 
 O **EC2** é um serviço que permite criar e gerenciar máquinas virtuais (instâncias) na AWS. Nesta etapa, criamos uma instância EC2 para hospedar aplicações ou serviços do projeto.
 
-### Criando e configurando uma VPC
+### 1.1 Criando e configurando uma VPC
 
 1. No console principal da AWS, utilize a barra de busca localizada no topo para buscar pelo serviço de **VPC**.
 2. Clique em **"Create VPC"** para iniciar o processo de criação.
@@ -41,7 +41,7 @@ O **EC2** é um serviço que permite criar e gerenciar máquinas virtuais (inst�
 - **IPv4 CIDR block**: Defina o intervalo de endereços de IP como `10.0.0.0/24`. Este bloco permite 256 endereços de IP, o que é mais do que suficiente para os fins deste projeto.
 - Clique em **CREATE VPC** para finalizar a criação.
 
-### Configurando Acesso via Gateway - Regras de Segurança
+### 1.2 Configurando Acesso via Gateway - Regras de Segurança
 
 As **regras de segurança** definem como o tráfego de rede pode acessar os recursos dentro da VPC. Nesta etapa, configuramos as regras de entrada (inbound) para permitir acesso HTTP e SSH apenas a partir do seu IP.
 
@@ -53,7 +53,7 @@ As **regras de segurança** definem como o tráfego de rede pode acessar os recu
    - **Type**: SSH  | **Source**: My IP (para liberar acesso via SSH à instância)
 5. Clique em **"Save Rules"** para aplicar as alterações.
 
-### Criando uma Instância EC2
+### 1.3 Criando uma Instância EC2
 
 1. No console principal da AWS, busque por **"EC2"**.
 2. Clique em **"Launch Instance"** ou, alternativamente, no painel esquerdo, selecione **"Instances"** > **"Launch Instance"**.
@@ -83,7 +83,7 @@ Assim, no console de instancias EC2 será mostrado a Instância craida, ou em cr
 
 ## Etapa 2 - Configuração do Servidor Web **Nginx**
 
-### Conectar-se à Instância EC2
+### 2.1 Conectar-se à Instância EC2
 
 A princício será feita a conexão com a instância via SSH (Source Shell), um protocolo de rede criptografado que permite acessar e gerenciar remotamente servidores, computadores ou dispositivos de forma segura. 
 
@@ -111,7 +111,7 @@ ssh -i "exemplo.pem" ec2-user@Public_IPv4_address
 
 **Instância conectada!** ✅
 
-### Instalação e Configuração do Nginx
+### 2.2 Instalação e Configuração do Nginx
 
 O Nginx é um servidor web de alto desempenho que pode ser usado para servir páginas web, balancear carga, entre outras funções.
 A seguir será detalhado como instalar e configurar o servidor web Nginx na Instância criada.
@@ -137,7 +137,7 @@ Será mostrado a seguinte página:
 ![Captura de tela 2025-02-21 100644](https://github.com/user-attachments/assets/c9ba7868-010d-491d-96a2-21225bc162e3)
 
 
-### Personalizar a página do Nginx
+### 2.3 Personalizar a página do Nginx
 
 Para personalizar a página inicial do Nginx será editado o arquivo index.html.
 
@@ -164,7 +164,11 @@ Salve o arquivo com os comandos Ctrl+X e Y. Recarregue o arquivo para aplicar as
 sudo systemctl reload nginx
 ```
 
-### Configurar reinício automático do Nginx
+Ao entrar novamente no endereço de IP via navegador é esperado a seguinte resposta:
+
+![Captura de tela 2025-02-23 134542](https://github.com/user-attachments/assets/fab6669e-7c41-4525-9e21-db2bdef112fb)
+
+### 2.4 Configurar reinício automático do Nginx
 
 É possível configurar um serviço para garantir que o Nginx reinicie automaticamente em caso de falha.
 
@@ -203,7 +207,7 @@ sudo systemctl enable nginx
 
 Nessa etapa será criado um script em Bash para monitorar a disponibilidade do site e enviar notificações para um canal do Discord caso o site esteja indisponível. O script é executado periodicamente através de um **cron job**, garantindo que o monitoramento seja contínuo.
 
-### Criação do Diretório e Script de Monitoramento
+### 3.1 Criação do Diretório e Script de Monitoramento
 
 Primeiro, crie um diretório para armazenar o script de monitoramento:
 
@@ -286,7 +290,7 @@ Ative as permissões de execução e torne o script executável:
 sudo chmod +x /opt/monitoramento/monitor_site.sh
 ```
 
-### Confirguração do Cron Job
+### 3.2 Confirguração do Cron Job
 
 O cron job garante que o script seja executado automaticamente a cada minuto.
 
