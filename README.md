@@ -376,7 +376,15 @@ Resposta esperada:
 📌
 - **Active: activating (auto-restart)**: Indica que o Nginx está tentando reiniciar automaticamente após ser parado.
 
-Após o reinicio automático, verifique o status do serviço Nginx se necessário, execute o monitoramento novamente.
+A noificação via Discord deverá chegar conforme esperado:
+
+![Captura de tela 2025-02-21 112402](https://github.com/user-attachments/assets/fb3abce7-8ef3-445a-9322-1e5030869251)
+
+Após o reinicio automático, verifique o status do serviço Nginx se necessário e execute o monitoramento novamente. 
+
+A sguir uma captura completa do terminal com todos os comandos para mostrar a eficiência do que foi feito:
+
+![Captura de tela 2025-02-21 113923](https://github.com/user-attachments/assets/2662f56c-f288-45df-a9dd-0af6956c7b6d)
 
 ## Conclusão ✅
 
