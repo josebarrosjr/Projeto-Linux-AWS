@@ -170,7 +170,7 @@ Substitua o conteúdo pelo seguinte exemplo, ou personalize a sua maneira.
 </html>
 ```
 
-Salve o arquivo com os comandos Ctrl+X e confirme com Y.
+Salve o arquivo com os comandos `Ctrl+X` e confirme com `Y`.
 
 Recarregue o arquivo para aplicar as alterações.
 
@@ -199,8 +199,8 @@ Restart=always
 RestartSec=5s
 ```
 📌
-- **Restart=always**: Faz com que o Nginx reinicie sempre que ele falhar.
-- **RestartSec=5s**: Define o tempo de espera entre as tentativas de reinício (5 segundos neste caso).
+- `Restart=always`: Faz com que o Nginx reinicie sempre que ele falhar.
+- `RestartSec=5s`: Define o tempo de espera entre as tentativas de reinício (5 segundos neste caso).
 
 Recarregue e reinicie o serviço Nginx:
 
@@ -289,38 +289,38 @@ else
 fi
 ```
 📌 **Configurações Iniciais**
-- **URL**: Armazena o endereço do site que será monitorado. No exemplo, o script verifica http://localhost:80 que é a porta configurada na Instância EC2 que criamos, mas você pode alterar para qualquer URL.
-- **LOG_FILE**: Define o caminho do arquivo de log onde os resultados do monitoramento serão armazenados.
-- **WEBHOOK_URL**: Contém o URL do webhook do Discord, que será usado para enviar notificações quando o site estiver indisponível.
+- `URL`: Armazena o endereço do site que será monitorado. No exemplo, o script verifica `http://localhost:80` que é a porta configurada na Instância EC2 que criamos, mas você pode alterar para qualquer URL.
+- `LOG_FILE`: Define o caminho do arquivo de log onde os resultados do monitoramento serão armazenados.
+- `WEBHOOK_URL`: Contém o URL do webhook do Discord, que será usado para enviar notificações quando o site estiver indisponível.
 
 📌 **Verificar diretório de logs**
-- **if [ ! -d "$(dirname "$LOG_FILE")" ]; then**: Verifica se o diretório onde o arquivo de log será salvo existe.
-    - **dirname "$LOG_FILE"**: Extrai o diretório do caminho do arquivo de log.
-    - **! -d**: Verifica se o diretório não existe.
-- **sudo mkdir -p**: Cria o diretório de logs (e qualquer diretório pai necessário) caso ele não exista.
-- **sudo chmod 755**: Define permissões para o diretório, garantindo que ele seja acessível.
+- `if [ ! -d "$(dirname "$LOG_FILE")" ]; then`: Verifica se o diretório onde o arquivo de log será salvo existe.
+    - `dirname "$LOG_FILE"`: Extrai o diretório do caminho do arquivo de log.
+    - `! -d`: Verifica se o diretório não existe.
+- `sudo mkdir -p`: Cria o diretório de logs (e qualquer diretório pai necessário) caso ele não exista.
+- `sudo chmod 755`: Define permissões para o diretório, garantindo que ele seja acessível.
 
 📌 **Verificar status do site**
-- **curl**: Comando usado para fazer uma requisição HTTP ao site.
-    - **o /dev/null**: Descarta o conteúdo da resposta (não armazena o HTML ou outros dados).
-    - **-s**: Executa o comando em modo silencioso (sem exibir saída no terminal).
-    - **-w "%{http_code}"**: Extrai apenas o código de status HTTP da resposta (por exemplo, 200 para sucesso, 404 para não encontrado, etc.).
-    - **--max-time 10**: Define um timeout de 10 segundos para a requisição. Se o site não responder nesse tempo, o comando falha.
-- **STATUS_CODE**: Armazena o código de status HTTP retornado pelo curl.
-- **DATE**: Armazena a data e hora atual no formato YYYY-MM-DD HH:MM:SS
+- `curl`: Comando usado para fazer uma requisição HTTP ao site.
+    - `o /dev/null`: Descarta o conteúdo da resposta (não armazena o HTML ou outros dados).
+    - `-s`: Executa o comando em modo silencioso (sem exibir saída no terminal).
+    - `-w "%{http_code}"`: Extrai apenas o código de status HTTP da resposta (por exemplo, 200 para sucesso, 404 para não encontrado, etc.).
+    - `--max-time 10`: Define um timeout de 10 segundos para a requisição. Se o site não responder nesse tempo, o comando falha.
+- `STATUS_CODE`: Armazena o código de status HTTP retornado pelo curl.
+- `DATE`: Armazena a data e hora atual no formato YYYY-MM-DD HH:MM:SS
 
 📌 **Registro no Log**
-- **if [ "$STATUS_CODE" -ne 200 ]; then**: Verifica se o código de status é diferente de 200 (OK).
-    - **ne**: Operador que significa "não igual".
-- **echo "$DATE - ERRO**: Site indisponível (Status: $STATUS_CODE)": Gera uma mensagem de erro com a data, hora e código de status.
-    - **sudo tee -a "$LOG_FILE"**: Adiciona a mensagem ao arquivo de log (-a para append) e exibe no terminal.
+- `if [ "$STATUS_CODE" -ne 200 ]; then`: Verifica se o código de status é diferente de 200 (OK).
+    - `ne`: Operador que significa "não igual".
+- `echo "$DATE - ERRO`: Site indisponível (Status: $STATUS_CODE)": Gera uma mensagem de erro com a data, hora e código de status.
+    - `sudo tee -a "$LOG_FILE"`: Adiciona a mensagem ao arquivo de log (-a para append) e exibe no terminal.
 
 📌 **Notificação Discord**
-- **curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"O site está fora do ar!\"}" "$WEBHOOK_URL"**: 
+- `curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"O site está fora do ar!\"}" "$WEBHOOK_URL"`: 
     - Envia uma requisição POST para o webhook do Discord.
-    - *-H "Content-Type*: application/json": Define o cabeçalho da requisição como JSON.
-    - **-d "{\"content\": \"O site está fora do ar!\"}"**: Envia a mensagem "O site está fora do ar!" no corpo da requisição.
-- **else**: Caso o site esteja acessível (status 200), registra uma mensagem de sucesso no log.
+    - `-H "Content-Type`: application/json": Define o cabeçalho da requisição como JSON.
+    - `-d "{\"content\": \"O site está fora do ar!\"}"`: Envia a mensagem "O site está fora do ar!" no corpo da requisição.
+- `else`: Caso o site esteja acessível (status 200), registra uma mensagem de sucesso no log.
 
 Ative as permissões de execução e torne o script executável:
 
@@ -346,11 +346,11 @@ Acrescente a linha:
 
 📌
 
-" * * * * * " Define a execução do script a cada minuto.
-   - Os campos ocupados por " * " representam: minuto, hora, dia do mês, mês, dia da semana.
-   - " * " significa "qualquer valor".
+` * * * * * ` Define a execução do script a cada minuto.
+   - Os campos ocupados por ` * ` representam: minuto, hora, dia do mês, mês, dia da semana.
+   - ` * ` significa "qualquer valor".
 
-Para salvar e sair pressione ESC e digite **:wq** (whrite and quit/salvar alterações e sair).
+Para salvar e sair pressione `ESC` e digite `:wq` (whrite and quit/salvar alterações e sair).
 
 **Automação e notificação via Discord configurados!** ✅
 
@@ -372,8 +372,8 @@ Resposta esperada:
 
 
 📌
-- **Active: active (running)**: Indica que o Nginx está em execução.
-- **Main PID**: Mostra o ID do processo principal do Nginx.
+- `Active: active (running)`: Indica que o Nginx está em execução.
+- `Main PID`: Mostra o ID do processo principal do Nginx.
 
 Execute o script de monitoramento para verificar se o site está acessível enquanto o Nginx está ativo e verifique o log de monituramento:
 
@@ -392,7 +392,7 @@ Respostas esperadas:
 
 **Parar o Nginx forçadamente**
 
-Para simular uma falha, pare o Nginx manualmente usando o comando **killall**:
+Para simular uma falha, pare o Nginx manualmente usando o comando `killall`:
 
 ```
 sudo killall nginx
@@ -404,7 +404,7 @@ Verifique o status do Nginx logo após o comando, como a contagem de restar foi 
 sudo systemctl status nginx
 ```
 
-Enquanto o Nginx estiver parado, se necessário execute novamente o comando **killall**, verifique o monitoramento do site:
+Enquanto o Nginx estiver parado, se necessário execute novamente o comando `killall`, verifique o monitoramento do site:
 
 ```
 /opt/monitoramento/monitor_site.sh
@@ -416,7 +416,7 @@ Resposta esperada:
 
 
 📌
-- **Active: activating (auto-restart)**: Indica que o Nginx está tentando reiniciar automaticamente após ser parado.
+- `Active: activating (auto-restart)`: Indica que o Nginx está tentando reiniciar automaticamente após ser parado.
 
 A noificação via Discord deverá chegar conforme esperado:
 
