@@ -35,38 +35,47 @@ O **EC2** é um serviço que permite criar e gerenciar máquinas virtuais (inst�
 ### 1.1 Criando e configurando uma VPC
 
 1. No console principal da AWS, utilize a barra de busca localizada no topo para buscar pelo serviço de **VPC**.
-2. Clique em **"Create VPC"** para iniciar o processo de criação.
+2. Clique em ***"Create VPC"*** para iniciar o processo de criação.
 
 - **VPC and more**: Esta opção cria a VPC juntamente com duas Subnets públicas e duas privadas.
 - **IPv4 CIDR block**: Defina o intervalo de endereços de IP como `10.0.0.0/24`. Este bloco permite 256 endereços de IP, o que é mais do que suficiente para os fins deste projeto.
-- Clique em **CREATE VPC** para finalizar a criação.
+- Clique em ***CREATE VPC*** para finalizar a criação.
 
 ### 1.2 Configurando Acesso via Gateway - Regras de Segurança
 
 As **regras de segurança** definem como o tráfego de rede pode acessar os recursos dentro da VPC. Nesta etapa, configuramos as regras de entrada (inbound) para permitir acesso HTTP e SSH apenas a partir do seu IP.
 
-1. No painel esquerdo, selecione **"Security Groups"**.
-2. Selecione o security group criado para a VPC.
-3. Na aba **"Inbound Rules"**, clique em **"Edit Inbound Rules"**.
-4. Adicione as seguintes regras:
-   - **Type**: HTTP | **Source**: My IP
-   - **Type**: SSH  | **Source**: My IP (para liberar acesso via SSH à instância)
-5. Clique em **"Save Rules"** para aplicar as alterações.
+1. No painel esquerdo, selecione ***"Security Groups"***.
+2. Selecione o Security Group "default" que foi criado automaticamente com a VPC.
+3. Na aba ***"Inbound Rules"***, clique em ***"Edit Inbound Rules"***.
+4. Adicione as seguintes regras para liberar acesso via SSH à instância:
+
+   |Type       |Source    |
+   |-----------|----------|
+   |HTTP       |My Ip     |
+   |SSH        |My Ip     |
+
+6. Clique em ***"Save Rules"*** para aplicar as alterações.
 
 ### 1.3 Criando uma Instância EC2
 
 1. No console principal da AWS, busque por **"EC2"**.
-2. Clique em **"Launch Instance"** ou, alternativamente, no painel esquerdo, selecione **"Instances"** > **"Launch Instance"**.
+2. Clique em ***"Launch Instance"*** ou, alternativamente, no painel esquerdo, selecione ***"Instances"*** > ***"Launch Instance"***.
+3. Será mostrado o seguinte painel:
+
+
+![Captura de tela 2025-02-24 100629](https://github.com/user-attachments/assets/3f897264-aeb1-40e1-bf11-eb2e82c29373)
+
 
 **Configurações**
 
+Este projeto será feito baseado nas configurações a seguir.
+
 - Adicione as Tags necessárias para o projeto
-- **Application and OS Images (Amazon Machine Image)**: Selecione **Amazon Linux 2 AMI (HVM) - Kernel 5.10, SSD Volume Type**.
+- **Application and OS Images (Amazon Machine Image - AMI)**: Selecione **Amazon Linux 2 AMI (HVM) - Kernel 5.10, SSD Volume Type**.
 - **Instance Type**: Escolha **t2.micro**.
 
-- **Par de Chaves (Key Pair)**: Utilize as configurações padrões deao criar uma nova Key Pair. Defina um nome (exemplo.pem) para a chave e faça o download após a criação.
-
-    ⚠️ Nome do arquivo e diretório de download serão necessários para a **Etapa 2**
+- **Par de Chaves (Key Pair)**: Utilize as configurações padrões deao criar uma nova Key Pair. Defina um nome (exemplo.pem) para a chave e faça o download após a criação. ⚠️ Nome do arquivo e diretório de download serão necessários para a **Etapa 2**
 
 - **VPC**: Selecione a VPC criada anteriormente.
 - **Subnet**: Escolha uma Subnet Pública.
@@ -75,7 +84,7 @@ As **regras de segurança** definem como o tráfego de rede pode acessar os recu
 
 - **Storage Type**: Altere para **gp3**.
 
-Clicar em **Launch Instance**. 
+Clicar em ***"Launch Instance"***. 
 
 **Instância criada!** ✅
 
@@ -83,11 +92,15 @@ Assim, no console de instancias EC2 será mostrado a Instância craida, ou em cr
 
 ## Etapa 2 - Configuração do Servidor Web **Nginx**
 
+O Nginx é um servidor web de alto desempenho, conhecido por sua eficiência, escalabilidade e baixo consumo de recursos.
+
 ### 2.1 Conectar-se à Instância EC2
 
-A princício será feita a conexão com a instância via SSH (Source Shell), um protocolo de rede criptografado que permite acessar e gerenciar remotamente servidores, computadores ou dispositivos de forma segura. 
+A princício será feita a conexão com a instância criada anteriormente via SSH (Source Shell), um protocolo de rede criptografado que permite acessar e gerenciar remotamente servidores, computadores ou dispositivos de forma segura. 
 
-A partir do console AWS EC2 > Instances, selecionar a Instância craida e clicar em **Connect**. Essa página irá disponibilizar opções de conexão, clique em **SSH Client** e já será mostrado as instruções de conexão.
+A partir do console AWS EC2 > Instances, selecionar a Instância craida e clicar em ***"Connect"***. Essa página irá disponibilizar opções de conexão, clique em ***"SSH Client"*** e já será mostrado as instruções de conexão, conforme a captura a seguir:
+
+![Captura de tela 2025-02-24 105214](https://github.com/user-attachments/assets/302d2fa1-4edf-4955-bd80-9ceb26a4ea80)
 
 Abra o terminal bash via Visual Studio Code, por exemplo.
 
@@ -113,7 +126,6 @@ ssh -i "exemplo.pem" ec2-user@Public_IPv4_address
 
 ### 2.2 Instalação e Configuração do Nginx
 
-O Nginx é um servidor web de alto desempenho que pode ser usado para servir páginas web, balancear carga, entre outras funções.
 A seguir será detalhado como instalar e configurar o servidor web Nginx na Instância criada.
 
 No terminal conectado com acesso via SSH execute o seguinte comando:
@@ -145,7 +157,7 @@ Para personalizar a página inicial do Nginx será editado o arquivo index.html.
 sudo nano /usr/share/nginx/html/index.html
 ```
 
-Substitua o conteúdo pelo seguinte código, ou personalize a sua maneira.
+Substitua o conteúdo pelo seguinte exemplo, ou personalize a sua maneira.
 
 ```<!DOCTYPE html>
 <html>
@@ -158,7 +170,9 @@ Substitua o conteúdo pelo seguinte código, ou personalize a sua maneira.
 </html>
 ```
 
-Salve o arquivo com os comandos Ctrl+X e Y. Recarregue o arquivo para aplicar as alterações.
+Salve o arquivo com os comandos Ctrl+X e confirme com Y.
+
+Recarregue o arquivo para aplicar as alterações.
 
 ```
 sudo systemctl reload nginx
@@ -205,9 +219,33 @@ sudo systemctl enable nginx
 
 ## Etapa 3 - Monitoramento e Notificações
 
-Nessa etapa será criado um script em Bash para monitorar a disponibilidade do site e enviar notificações para um canal do Discord caso o site esteja indisponível. O script é executado periodicamente através de um **cron job**, garantindo que o monitoramento seja contínuo.
+Nessa etapa será criado um script em Bash para monitorar a disponibilidade do site e enviar notificações para um canal do Discord caso o site esteja indisponível. O script é executado periodicamente através de um **Cron Job**, garantindo que o monitoramento seja contínuo.
 
-### 3.1 Criação do Diretório e Script de Monitoramento
+### 3.1 Criação de um Servidor no Discord e Configuração de um Webhook
+
+Para enviar notificações ao Discord, é necessário criar um servidor (caso você ainda não tenha um) e configurar um webhook no canal desejado.
+
+**Criando um Servidor no Discord**
+- Abra o Discord e clique no ícone "+" no canto esquerdo da interface.
+- Selecione "Criar um Servidor".
+- Escolha um template ou crie um servidor personalizado.
+- Dê um nome ao servidor e clique em "Criar".
+
+**Configurando um Webhook**
+- No servidor criado, clique no canal onde deseja receber as notificações.
+- Clique no ícone de engrenagem ao lado do nome do canal para acessar as Configurações do Canal.
+- Navegue até a seção **Integrações** e clique em "Criar Webhook".
+- Personalize o webhook com nome e imagem que desejar.
+- Copie a URL do Webhook gerada. ⚠️Essa URL será usada no script de monitoramento para enviar mensagens ao canal.
+
+![Captura de tela 2025-02-24 103418](https://github.com/user-attachments/assets/b428e270-8c33-4033-b98b-696f8126826d)
+
+**Alternativa: Criando um Webhook em um Servidor Existente**
+- Se você já possui um servidor no Discord e deseja adicionar um webhook a um canal existente:
+- Acesse o canal desejado no servidor.
+- Siga os passos 2 a 5 da seção Configurando um Webhook acima.
+
+### 3.2 Criação do Diretório e Script de Monitoramento
 
 Primeiro, crie um diretório para armazenar o script de monitoramento:
 
@@ -290,7 +328,7 @@ Ative as permissões de execução e torne o script executável:
 sudo chmod +x /opt/monitoramento/monitor_site.sh
 ```
 
-### 3.2 Confirguração do Cron Job
+### 3.3 Confirguração do Cron Job
 
 O cron job garante que o script seja executado automaticamente a cada minuto.
 
@@ -318,7 +356,7 @@ Para salvar e sair pressione ESC e digite **:wq** (whrite and quit/salvar altera
 
 ## Etapa 4 - Testes
 
-Nesta etapa será descrito os passos para testar o comportamento do Nginx em caso de falha, verificando se o serviço é reiniciado automaticamente e se o site monitorado volta a ficar acessível após a recuperação do Nginx. O teste utiliza o script de monitoramento criado anteriormente (**monitor_site.sh**) para verificar a disponibilidade do site.
+Esta etapa conta com os passos para testar o comportamento do Nginx em caso de falha, verificando se o serviço é reiniciado automaticamente e se o site monitorado volta a ficar acessível após a recuperação do Nginx. O teste utiliza o script de monitoramento criado anteriormente (**monitor_site.sh**) para verificar a disponibilidade do site.
 
 ### Teste de Auto restart do Nginx
 
