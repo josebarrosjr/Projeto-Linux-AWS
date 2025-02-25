@@ -14,6 +14,8 @@ O objetivo do projeto consiste em desenvolver e testar habilidades em Linux, AWS
 
 4 - Testes
 
+5 - Desafio Extra
+
 ### Tecnologias Utilizadas
 
 - **Infraestrutura:**	AWS EC2, VPC, Security Groups, Subnets
@@ -428,8 +430,121 @@ A sguir uma captura completa do terminal com todos os comandos para mostrar a ef
 
 ![Captura de tela 2025-02-21 113923](https://github.com/user-attachments/assets/2662f56c-f288-45df-a9dd-0af6956c7b6d)
 
+
+## Etapa 5 - Desafio Extra
+
+Como proposta de aprofundamento na execução do projeto, será implementado todas as etapas anteriores via `UserData` ao iniciar uma Instância EC2.
+
+Um **UserData** é um script ou conjunto de comandos que pode ser fornecido ao iniciar uma instância, executado automaticamente **apenas uma vez**, geralmente utilizado para instalar softwares, configurar serviços e executar tarefas de inicialização personalizadas.
+
+### 5.1 Iniciando uma Instância com UserData
+
+Siga os passos na etapa **1.3** acima para criar uma instância, porém, após configurar o **Storage Type** para `gp3`, não inicie a instância (Launch Instance). Abaixo de **Configure Storage**, clique na aba **Advanced details** para expandi-la.
+
+![Captura de tela 2025-02-25 151308](https://github.com/user-attachments/assets/02725a7c-fd92-43b4-8a49-a27c8464231b)
+
+Na última configuração dessa aba está o local para inserir o `UserData`. Aqui reformulamos todos as etapas anteriores de modo que, ao iniciar a instância, já teremos esse projeto rodando.
+
+Inclua o seguinte código no campo UserData:
+
+```
+#!/bin/bash
+# Projeto AWS-Linux
+
+# Redirecionar saída para log
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+
+# Atualizar pacotes e instalar EPEL
+sudo yum update -y
+sudo amazon-linux-extras install epel -y
+
+# Instalar nginx
+sudo yum install nginx -y
+
+# Criar arquivo HTML de teste
+sudo cat << 'EOF' > /usr/share/nginx/html/index.html
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>PROJETO AWS Compass.UOL</h1>
+<h2>teste de instalacao e automacao (monitoramento) do Nginx via UserData</p> </h2>
+
+<script>
+let host = location.host;
+document.getElementById("hostname").innerHTML = host;
+</script>
+</body>
+</html>
+EOF
+
+# Configurar reinício automático nginx
+sudo sed -i '/\[Service\]/a Restart=always\nRestartSec=5s' /usr/lib/systemd/system/nginx.service
+
+# Recarregar o systemd para aplicar as alterações
+sudo systemctl daemon-reload
+
+# Habilitar e iniciar o nginx
+sudo systemctl enable nginx --now
+
+# Criação do Diretório e Script de Monitoramento
+sudo mkdir -p /opt/monitoramento
+
+# Criar o script monitor_site.sh dentro do diretório
+sudo cat << 'EOF' > /opt/monitoramento/monitor_site.sh
+#!/bin/bash
+
+# Configurações
+URL="http://localhost:80"
+LOG_FILE="/var/log/monitoramento.log"
+WEBHOOK_URL="https://<seu-webhook>"
+
+# Verifica se o diretório de logs existe, se não, cria
+if [ ! -d "$(dirname "$LOG_FILE")" ]; then
+    sudo mkdir -p "$(dirname "$LOG_FILE")"
+    sudo chmod 755 "$(dirname "$LOG_FILE")"
+fi
+
+# Verifica se o site está acessível
+STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}" --max-time 10 "$URL")  # Timeout de 10 segundos
+DATE=$(date +"%Y-%m-%d %H:%M:%S")
+
+if [ "$STATUS_CODE" -ne 200 ]; then
+    echo "$DATE - ERRO: Site indisponível (Status: $STATUS_CODE)" | sudo tee -a "$LOG_FILE"
+    
+    # Enviar notificação para o Discord
+    curl -H "Content-Type: application/json" -X POST -d "{\"content\": \"O site está fora do ar!\"}" "$WEBHOOK_URL"
+else
+    echo "$DATE - OK: Site acessível (Status: $STATUS_CODE)" | sudo tee -a "$LOG_FILE"
+fi
+EOF
+
+# permissão de execução ao script
+sudo chmod +x /opt/monitoramento/monitor_site.sh
+
+# Cron Job para monitorar a cada minuto
+(sudo crontab -l 2>/dev/null; echo "* * * * * /opt/monitoramento/monitor_site.sh") | sudo crontab -
+
+# Update final
+sudo yum update -y
+```
+
+📌**Alterações feitas para funcionar como UserData**
+- `exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1`: criação de um log de erros para verificação caso o script falhe.
+- `sudo amazon-linux-extras install epel -y`: Instala o repositório EPEL (Extra Packages for Enterprise Linux), que fornece pacotes adicionais para instalar o Nginx.
+- `sudo cat << 'EOF' > /usr/share/nginx/html/index.html`: criar uma página HTML personalizada, o comando `EOF` inclui o código no arquivo iniciado para não utilizar editor de texto nessa etapa.
+- `sudo sed -i '/\[Service\]/a Restart=always\nRestartSec=5s' /usr/lib/systemd/system/nginx.service`: inclui as configurações `Restart=always` e `RestartSec=5s` no campo [Service] do arquivo de serviço do Nginx para o reinício automático.
+- `sudo cat << 'EOF' > /opt/monitoramento/monitor_site.sh`: cria o script de monitoramento via Discord utilizando `EOF` para incluir o codigo bash.
+- `(sudo crontab -l 2>/dev/null; echo "* * * * * /opt/monitoramento/monitor_site.sh") | sudo crontab -`: configura o CronJob para executar o script de monitoramento a cada minuto.
+
+Após incluir o UserData no campo, clique em **Launch Instance**.
+
+Repita a **Etapa 4** de testes para validar esse processo, os resultados esperados são os mesmos.
+
 ## Conclusão ✅
 
 Este projeto prático demonstrou a integração de diversas tecnologias e práticas essenciais para a área de DevSecOps, com foco em Linux, AWS, automação e monitoramento. Através das etapas realizadas, foi possível configurar um ambiente seguro e escalável na AWS, implantar um servidor web com Nginx, e implementar um sistema de monitoramento automatizado com notificações em tempo real via Discord.
+
+O desafio resume o projeto em uma solução simples e eficaz para automatizar a configurar o objetivo desse projeto em apenas uma etapa.
 
 O sucesso deste projeto reforça a importância da automação, monitoramento contínuo e boas práticas de segurança na gestão de infraestruturas modernas.
