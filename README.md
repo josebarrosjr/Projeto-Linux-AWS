@@ -52,7 +52,7 @@ As **regras de segurança** definem como o tráfego de rede pode acessar os recu
 3. Na aba ***"Inbound Rules"***, clique em ***"Edit Inbound Rules"***.
 4. Adicione as seguintes regras para liberar acesso via SSH à instância:
 
-   |Type       |Source    |
+   |Type       |Source    | 
    |-----------|----------|
    |HTTP       |My Ip     |
    |SSH        |My Ip     |
@@ -77,7 +77,7 @@ Este projeto será feito baseado nas configurações a seguir.
 - **Application and OS Images (Amazon Machine Image - AMI)**: Selecione **Amazon Linux 2 AMI (HVM) - Kernel 5.10, SSD Volume Type**.
 - **Instance Type**: Escolha **t2.micro**.
 
-- **Par de Chaves (Key Pair)**: Utilize as configurações padrões deao criar uma nova Key Pair. Defina um nome (exemplo.pem) para a chave e faça o download após a criação. ⚠️ Nome do arquivo e diretório de download serão necessários para a **Etapa 2**
+- **Par de Chaves (Key Pair)**: Utilize as configurações padrões de criar uma nova Key Pair. Defina um nome (exemplo.pem) para a chave e faça o download após a criação. ⚠️ Nome do arquivo e diretório de download serão necessários para a **Etapa 2**
 
 - **VPC**: Selecione a VPC criada anteriormente.
 - **Subnet**: Escolha uma Subnet Pública.
